@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Форма регистрации</title>
+<style>
+  :root {
+    --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --card-bg: #ffffff;
+    --card-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+    --text-primary: #333333;
+    --text-secondary: #555555;
+    --input-bg: #ffffff;
+    --input-border: #e0e0e0;
+    --input-text: #333333;
+    --input-placeholder: #999999;
+    --accent: #667eea;
+    --accent-2: #764ba2;
+    --accent-ring: rgba(102, 126, 234, 0.15);
+    --error-color: #e74c3c;
+    --error-ring: rgba(231, 76, 60, 0.12);
+    --success-bg: #eafaf1;
+    --success-color: #27ae60;
+    --toggle-bg: rgba(255, 255, 255, 0.2);
+    --toggle-border: rgba(255, 255, 255, 0.35);
+    --toggle-text: #ffffff;
+    --toggle-active-bg: #ffffff;
+    --toggle-active-text: #764ba2;
+  }
+
+  [data-theme="dark"] {
+    --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    --card-bg: #1e1e2f;
+    --card-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    --text-primary: #f1f1f5;
+    --text-secondary: #b8b8c8;
+    --input-bg: #2a2a3d;
+    --input-border: #3a3a52;
+    --input-text: #f1f1f5;
+    --input-placeholder: #7a7a92;
+    --accent: #8b9dff;
+    --accent-2: #a67eea;
+    --accent-ring: rgba(139, 157, 255, 0.2);
+    --error-color: #ff6b6b;
+    --error-ring: rgba(255, 107, 107, 0.18);
+    --success-bg: #1d3a2a;
+    --success-color: #4ade80;
+    --toggle-bg: rgba(255, 255, 255, 0.08);
+    --toggle-border: rgba(255, 255, 255, 0.18);
+    --toggle-text: #d1d1e0;
+    --toggle-active-bg: #8b9dff;
+    --toggle-active-text: #1a1a2e;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease,
+                border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-gradient);
+    background-size: 200% 200%;
+    animation: gradientShift 15s ease infinite;
+    padding: 20px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  @keyframes gradientShift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  body::before,
+  body::after {
+    content: '';
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.4;
+    z-index: 0;
+    pointer-events: none;
+  }
+  body::before {
+    width: 400px; height: 400px;
+    background: var(--accent);
+    top: -100px; left: -100px;
+    animation: float 12s ease-in-out infinite;
+  }
+  body::after {
+    width: 350px; height: 350px;
+    background: var(--accent-2);
+    bottom: -100px; right: -100px;
+    animation: float 15s ease-in-out infinite reverse;
+  }
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50%      { transform: translate(40px, 30px) scale(1.1); }
+  }
+
+  .top-controls {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 100;
+  }
+
+  .control-group {
+    display: flex;
+    background: var(--toggle-bg);
+    border: 1px solid var(--toggle-border);
+    border-radius: 30px;
+    padding: 4px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  }
+
+  .control-btn {
+    background: transparent;
+    border: none;
+    color: var(--toggle-text);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 22px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+  }
+
+  .control-btn:hover { color: var(--toggle-active-bg); }
+
+  .control-btn.active {
+    background: var(--toggle-active-bg);
+    color: var(--toggle-active-text);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .form-container {
+    background: var(--card-bg);
+    padding: 40px 35px;
+    border-radius: 16px;
+    box-shadow: var(--card-shadow);
+    width: 100%;
+    max-width: 420px;
+    animation: fadeIn 0.5s ease;
+    position: relative;
+    z-index: 1;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .form-container h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: var(--text-primary);
+    font-size: 26px;
+    font-weight: 600;
+  }
+
+  .form-group {
+    margin-bottom: 18px;
+    position: relative;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .form-group input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 2px solid var(--input-border);
+    border-radius: 8px;
+    font-size: 15px;
+    background: var(--input-bg);
+    color: var(--input-text);
+    transition: border-color 0.25s, box-shadow 0.25s, background 0.3s, color 0.3s;
+    outline: none;
+  }
+
+  .form-group input::placeholder { color: var(--input-placeholder); }
+
+  .form-group input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-ring);
+  }
+
+  .form-group input.error {
+    border-color: var(--error-color);
+    box-shadow: 0 0 0 3px var(--error-ring);
+  }
+
+  .error-message {
+    color: var(--error-color);
+    font-size: 12.5px;
+    margin-top: 5px;
+    display: none;
+  }
+
+  .error-message.visible {
+    display: block;
+    animation: shake 0.3s ease;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25%      { transform: translateX(-4px); }
+    75%      { transform: translateX(4px); }
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 13px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+    background-size: 200% 200%;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.25s, background-position 0.5s;
+    margin-top: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .submit-btn::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.6s;
+  }
+
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px var(--accent-ring);
+    background-position: 100% 0;
+  }
+
+  .submit-btn:hover::after { left: 100%; }
+  .submit-btn:active { transform: translateY(0); }
+
+  .submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .success-message {
+    display: none;
+    text-align: center;
+    color: var(--success-color);
+    font-weight: 600;
+    margin-top: 20px;
+    padding: 12px;
+    background: var(--success-bg);
+    border-radius: 8px;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .success-message.visible { display: block; }
+
+  .error-banner {
+    display: none;
+    text-align: center;
+    color: var(--error-color);
+    font-weight: 600;
+    margin-top: 20px;
+    padding: 12px;
+    background: rgba(231, 76, 60, 0.1);
+    border-radius: 8px;
+    border: 1px solid var(--error-color);
+  }
+
+  .error-banner.visible { display: block; }
+
+  @media (max-width: 480px) {
+    .form-container { padding: 30px 22px; }
+    .top-controls { top: 10px; right: 10px; }
+    .control-btn { padding: 7px 10px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-controls">
+  <div class="control-group" id="themeSwitcher">
+    <button class="control-btn active" data-theme="light" title="Светлая тема">☀️</button>
+    <button class="control-btn" data-theme="dark" title="Тёмная тема">🌙</button>
+  </div>
+  <div class="control-group" id="langSwitcher">
+    <button class="control-btn active" data-lang="ru">RU</button>
+    <button class="control-btn" data-lang="en">EN</button>
+  </div>
+</div>
+
+<div class="form-container">
+  <h2 data-i18n="title">Регистрация</h2>
+
+  <form id="registrationForm" novalidate>
+    <div class="form-group">
+      <label for="firstName" data-i18n="firstName">First Name</label>
+      <input type="text" id="firstName" name="firstName" data-i18n-placeholder="firstNamePlaceholder" placeholder="Введите имя">
+      <div class="error-message" id="firstNameError" data-i18n="firstNameError">Пожалуйста, введите имя</div>
+    </div>
+
+    <div class="form-group">
+      <label for="lastName" data-i18n="lastName">Last Name</label>
+      <input type="text" id="lastName" name="lastName" data-i18n-placeholder="lastNamePlaceholder" placeholder="Введите фамилию">
+      <div class="error-message" id="lastNameError" data-i18n="lastNameError">Пожалуйста, введите фамилию</div>
+    </div>
+
+    <div class="form-group">
+      <label for="email" data-i18n="email">Email</label>
+      <input type="email" id="email" name="email" data-i18n-placeholder="emailPlaceholder" placeholder="example@mail.com">
+      <div class="error-message" id="emailError" data-i18n="emailError">Введите корректный email</div>
+    </div>
+
+    <div class="form-group">
+      <label for="number" data-i18n="number">Number</label>
+      <input type="tel" id="number" name="number" data-i18n-placeholder="numberPlaceholder" placeholder="+7 999 123-45-67">
+      <div class="error-message" id="numberError" data-i18n="numberError">Введите корректный номер телефона</div>
+    </div>
+
+    <button type="submit" class="submit-btn" id="submitBtn" data-i18n="submit">Зарегистрироваться</button>
+
+    <div class="success-message" id="successMessage" data-i18n="success">
+      ✅ Регистрация прошла успешно!
+    </div>
+
+    <div class="error-banner" id="errorBanner">
+      ❌ Ошибка: <span id="errorText"></span>
+    </div>
+  </form>
+</div>
+
+<!-- Supabase JS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+  /* ============================================================
+     1. НАСТРОЙКИ SUPABASE
+     ============================================================ */
+  // ⚠️ ЗАМЕНИТЕ ЭТИ ЗНАЧЕНИЯ НА ВАШИ ИЗ НАСТРОЕК SUPABASE
+  const SUPABASE_URL = 'YOUR_PROJECT_URL_HERE';
+  const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY_HERE';
+
+  // Создаём клиент Supabase
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  /* ============================================================
+     2. СЛОВАРИ ПЕРЕВОДОВ
+     ============================================================ */
+  const translations = {
+    ru: {
+      title: 'Регистрация',
+      firstName: 'First Name',
+      lastName: 'Last Name',
+      email: 'Email',
+      number: 'Number',
+      firstNamePlaceholder: 'Введите имя',
+      lastNamePlaceholder: 'Введите фамилию',
+      emailPlaceholder: 'example@mail.com',
+      numberPlaceholder: '+7 999 123-45-67',
+      submit: 'Зарегистрироваться',
+      success: '✅ Регистрация прошла успешно!',
+      firstNameError: 'Имя должно содержать минимум 2 символа',
+      lastNameError: 'Фамилия должна содержать минимум 2 символа',
+      emailError: 'Введите корректный email',
+      numberError: 'Введите корректный номер телефона',
+      sending: 'Отправка...',
+      dbError: 'Ошибка при сохранении. Попробуйте позже.',
+      duplicateEmail: 'Этот email уже зарегистрирован.'
+    },
+    en: {
+      title: 'Sign Up',
+      firstName: 'First Name',
+      lastName: 'Last Name',
+      email: 'Email',
+      number: 'Number',
+      firstNamePlaceholder: 'Enter your first name',
+      lastNamePlaceholder: 'Enter your last name',
+      emailPlaceholder: 'example@mail.com',
+      numberPlaceholder: '+1 555 123-45-67',
+      submit: 'Sign Up',
+      success: '✅ Registration successful!',
+      firstNameError: 'First name must contain at least 2 characters',
+      lastNameError: 'Last name must contain at least 2 characters',
+      emailError: 'Please enter a valid email',
+      numberError: 'Please enter a valid phone number',
+      sending: 'Sending...',
+      dbError: 'Failed to save. Please try again later.',
+      duplicateEmail: 'This email is already registered.'
+    }
+  };
+
+  /* ============================================================
+     3. ПЕРЕКЛЮЧАТЕЛЬ ТЕМ
+     ============================================================ */
+  const themeSwitcher = document.getElementById('themeSwitcher');
+  const themeButtons = themeSwitcher.querySelectorAll('.control-btn');
+
+  function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    themeButtons.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.theme === theme);
+    });
+    localStorage.setItem('theme', theme);
+  }
+
+  themeButtons.forEach(btn => {
+    btn.addEventListener('click', () => setTheme(btn.dataset.theme));
+  });
+
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme) {
+    setTheme(savedTheme);
+  } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    setTheme('dark');
+  } else {
+    setTheme('light');
+  }
+
+  /* ============================================================
+     4. ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКОВ
+     ============================================================ */
+  const langSwitcher = document.getElementById('langSwitcher');
+  const langButtons = langSwitcher.querySelectorAll('.control-btn');
+  let currentLang = localStorage.getItem('lang') || 'ru';
+
+  function setLanguage(lang) {
+    currentLang = lang;
+    const t = translations[lang];
+
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.dataset.i18n;
+      if (t[key]) el.textContent = t[key];
+    });
+
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      const key = el.dataset.i18nPlaceholder;
+      if (t[key]) el.placeholder = t[key];
+    });
+
+    langButtons.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.lang === lang);
+    });
+    document.documentElement.setAttribute('lang', lang);
+
+    updateVisibleErrors();
+    localStorage.setItem('lang', lang);
+  }
+
+  langButtons.forEach(btn => {
+    btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
+  });
+
+  /* ============================================================
+     5. ВАЛИДАЦИЯ ФОРМЫ
+     ============================================================ */
+  const form = document.getElementById('registrationForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const successMessage = document.getElementById('successMessage');
+  const errorBanner = document.getElementById('errorBanner');
+  const errorText = document.getElementById('errorText');
+
+  const fields = {
+    firstName: {
+      input: document.getElementById('firstName'),
+      error: document.getElementById('firstNameError'),
+      validate: (v) => v.trim().length >= 2,
+      errorKey: 'firstNameError'
+    },
+    lastName: {
+      input: document.getElementById('lastName'),
+      error: document.getElementById('lastNameError'),
+      validate: (v) => v.trim().length >= 2,
+      errorKey: 'lastNameError'
+    },
+    email: {
+      input: document.getElementById('email'),
+      error: document.getElementById('emailError'),
+      validate: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()),
+      errorKey: 'emailError'
+    },
+    number: {
+      input: document.getElementById('number'),
+      error: document.getElementById('numberError'),
+      validate: (v) => /^[+]?[\d\s()-]{7,20}$/.test(v.trim()),
+      errorKey: 'numberError'
+    }
+  };
+
+  function validateField(key) {
+    const field = fields[key];
+    const value = field.input.value;
+    const isValid = field.validate(value);
+
+    if (!isValid) {
+      field.input.classList.add('error');
+      field.error.textContent = translations[currentLang][field.errorKey];
+      field.error.classList.add('visible');
+    } else {
+      field.input.classList.remove('error');
+      field.error.classList.remove('visible');
+    }
+    return isValid;
+  }
+
+  function updateVisibleErrors() {
+    Object.keys(fields).forEach(key => {
+      const field = fields[key];
+      if (field.error.classList.contains('visible')) {
+        field.error.textContent = translations[currentLang][field.errorKey];
+      }
+    });
+  }
+
+  Object.keys(fields).forEach(key => {
+    const field = fields[key];
+    field.input.addEventListener('blur', () => validateField(key));
+    field.input.addEventListener('input', () => {
+      if (field.input.classList.contains('error')) {
+        validateField(key);
+      }
+    });
+  });
+
+  /* ============================================================
+     6. ОТПРАВКА ДАННЫХ В SUPABASE
+     ============================================================ */
+  function showError(message) {
+    errorText.textContent = message;
+    errorBanner.classList.add('visible');
+    successMessage.classList.remove('visible');
+  }
+
+  function hideError() {
+    errorBanner.classList.remove('visible');
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    hideError();
+    successMessage.classList.remove('visible');
+
+    // Валидация всех полей
+    let allValid = true;
+    Object.keys(fields).forEach(key => {
+      if (!validateField(key)) allValid = false;
+    });
+
+    if (!allValid) return;
+
+    // Собираем данные формы
+    const formData = {
+      first_name: fields.firstName.input.value.trim(),
+      last_name: fields.lastName.input.value.trim(),
+      email: fields.email.input.value.trim().toLowerCase(),
+      number: fields.number.input.value.trim()
+    };
+
+    // Блокируем кнопку и меняем текст
+    submitBtn.disabled = true;
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = translations[currentLang].sending;
+
+    try {
+      // Отправляем данные в Supabase
+      const { data, error, status } = await supabaseClient
+        .from('registrations')
+        .insert([formData])
+        .select();
+
+      if (error) {
+        // Обработка ошибок
+        console.error('Supabase error:', error);
+
+        // Проверяем на дубликат email (код 23505)
+        if (error.code === '23505') {
+          showError(translations[currentLang].duplicateEmail);
+        } else {
+          showError(translations[currentLang].dbError + ' (' + error.message + ')');
+        }
+        return;
+      }
+
+      // Успешная отправка (код 201)
+      console.log('Success! Status:', status, 'Data:', data);
+
+      successMessage.classList.add('visible');
+      form.reset();
+
+      setTimeout(() => {
+        successMessage.classList.remove('visible');
+      }, 4000);
+
+    } catch (err) {
+      console.error('Unexpected error:', err);
+      showError(translations[currentLang].dbError);
+    } finally {
+      // Разблокируем кнопку
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    }
+  });
+
+  /* ============================================================
+     7. ИНИЦИАЛИЗАЦИЯ
+     ============================================================ */
+  setLanguage(currentLang);
+</script>
+
+</body>
+</html>
